@@ -2,12 +2,13 @@
 // Dev Formatter Pro — Apple Minimalist Controller (Integrated Themes, Zero Duplicate Headers)
 // Seamless theme synchronization, auto-detection, dialect selection, and SVG interactions.
 
-import { detectLanguage, DetectedLanguage } from './utils/detectLanguage';
-import { formatJson } from './utils/jsonFormatter';
-import { formatSql, SQL_DIALECTS, DEFAULT_SQL_DIALECT } from './utils/sqlFormatter';
-import { escapeJsonString, unescapeJsonString } from './utils/jsonEscape';
-import { PENDING_INPUT_KEY, PendingInput } from './utils/pendingInput';
-import type { ErrorPosition } from './utils/errorPosition';
+import { detectLanguage, DetectedLanguage } from './core/detectLanguage';
+import { buildErrorBanner } from './core/errorBanner';
+import { PENDING_INPUT_KEY, PendingInput } from './core/pendingInput';
+import type { ErrorPosition } from './core/errorPosition';
+import { getFormatter, mismatchHint } from './features/registry';
+import { escapeJsonString, unescapeJsonString } from './features/json/jsonEscape';
+import { SQL_DIALECTS, DEFAULT_SQL_DIALECT } from './features/sql/dialects';
 
 declare const CodeMirror: any;
 
@@ -159,7 +160,16 @@ document.addEventListener('DOMContentLoaded', () => {
     viewportMargin: Infinity,
     specialChars: specialCharsRegex,
     specialCharPlaceholder: makeSpecialCharPlaceholder,
-    foldGutter: true,
+    foldGutter: {
+      rangeFinder: CodeMirror.fold.combine(
+        CodeMirror.fold.brace,
+        CodeMirror.fold.indent
+      ),
+    },
+    foldOptions: {
+      widget: '…',
+      minFoldSize: 1,
+    },
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
   };
 
@@ -364,104 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Determine target format mode
-    let targetFormat: 'json' | 'sql' | 'unknown';
-    let detected: DetectedLanguage = 'unknown';
+    const targetFormat: DetectedLanguage =
+      currentMode === 'auto' ? detectLanguage(rawInput) : currentMode;
 
-    if (currentMode === 'auto') {
-      detected = detectLanguage(rawInput);
-      targetFormat = detected;
-    } else {
-      targetFormat = currentMode;
-    }
-
-    // Execute Formatting
-    if (targetFormat === 'sql') {
-      setEditorSyntaxMode('sql');
-      jsonBadge.style.display = 'none';
-      dialectWrapper.style.display = 'inline-flex';
-      detectedHint.textContent = currentMode === 'auto' ? 'SQL' : '';
-      setJsonToolsVisible(false);
-
-      const result = formatSql(rawInput, currentDialect);
-      if (result.isError) {
-        outputEditor.getWrapperElement().classList.add('error-output');
-        const detectedLang = detectLanguage(rawInput);
-        let errorBanner = '';
-        if (detectedLang === 'json') {
-          errorBanner = [
-            `-- ⚠️ Unable to format as SQL (${currentDialect})`,
-            `-- 💡 Hint: The input appears to be JSON. Click "JSON" or "Auto" in the top bar to format as JSON.`,
-            `-- ─────────────────────────────────────────────────────────────────`,
-            `-- Parser: ${result.errorMessage || 'Syntax error'}`,
-            ``,
-            ``,
-          ].join('\n');
-        } else {
-          errorBanner = [
-            `-- ⚠️ Unable to format as SQL (${currentDialect})`,
-            `-- 💡 Hint: Check for incomplete SQL syntax or dialect mismatches.`,
-            `-- ─────────────────────────────────────────────────────────────────`,
-            `-- Parser: ${result.errorMessage || 'Syntax error'}`,
-            ``,
-            ``,
-          ].join('\n');
-        }
-        outputEditor.setValue(errorBanner + rawInput);
-        if (result.errorPosition) {
-          showErrorMark(result.errorPosition);
-        } else {
-          clearErrorMarks();
-        }
-      } else {
-        outputEditor.setValue(result.formatted);
-        outputEditor.getWrapperElement().classList.remove('error-output');
-        clearErrorMarks();
-      }
-    } else if (targetFormat === 'json') {
-      setEditorSyntaxMode('json');
-      jsonBadge.style.display = 'inline-flex';
-      dialectWrapper.style.display = 'none';
-      detectedHint.textContent = currentMode === 'auto' ? 'JSON' : '';
-      setJsonToolsVisible(true);
-
-      const result = formatJson(rawInput, jsonMinify ? 0 : 2);
-      if (result.isError) {
-        outputEditor.getWrapperElement().classList.add('error-output');
-        const detectedLang = detectLanguage(rawInput);
-        let errorBanner = '';
-        if (detectedLang === 'sql') {
-          errorBanner = [
-            `// ⚠️ Unable to format as JSON`,
-            `// 💡 Hint: The input appears to be SQL. Click "SQL" or "Auto" in the top bar to format as SQL.`,
-            `// ─────────────────────────────────────────────────────────────────`,
-            `// Parser: ${result.errorMessage || 'Invalid JSON'}`,
-            ``,
-            ``,
-          ].join('\n');
-        } else {
-          errorBanner = [
-            `// ⚠️ Unable to format as JSON`,
-            `// 💡 Hint: Check for missing quotes around keys, trailing commas, or unmatched braces.`,
-            `// ─────────────────────────────────────────────────────────────────`,
-            `// Parser: ${result.errorMessage || 'Invalid JSON'}`,
-            ``,
-            ``,
-          ].join('\n');
-        }
-        outputEditor.setValue(errorBanner + rawInput);
-        if (result.errorPosition) {
-          showErrorMark(result.errorPosition);
-        } else {
-          clearErrorMarks();
-        }
-      } else {
-        outputEditor.setValue(result.formatted);
-        outputEditor.getWrapperElement().classList.remove('error-output');
-        clearErrorMarks();
-      }
-    } else {
-      // Unknown content
+    if (targetFormat === 'unknown') {
       setEditorSyntaxMode('text');
       jsonBadge.style.display = 'none';
       dialectWrapper.style.display = 'none';
@@ -470,6 +386,39 @@ document.addEventListener('DOMContentLoaded', () => {
       clearErrorMarks();
       outputEditor.setValue('// Paste valid JSON or SQL to format…');
       outputEditor.getWrapperElement().classList.remove('error-output');
+      return;
+    }
+
+    const entry = getFormatter(targetFormat);
+    setEditorSyntaxMode(entry.cmLang);
+    jsonBadge.style.display = entry.id === 'json' ? 'inline-flex' : 'none';
+    dialectWrapper.style.display = entry.id === 'sql' ? 'inline-flex' : 'none';
+    detectedHint.textContent = currentMode === 'auto' ? entry.label : '';
+    setJsonToolsVisible(entry.id === 'json');
+
+    const result = entry.format(rawInput, {
+      dialect: currentDialect,
+      jsonMinify,
+    });
+    if (result.isError) {
+      outputEditor.getWrapperElement().classList.add('error-output');
+      const detectedLang = detectLanguage(rawInput);
+      const errorBanner = buildErrorBanner({
+        commentPrefix: entry.commentPrefix,
+        title: entry.errorTitle({ dialect: currentDialect }),
+        hint: mismatchHint(entry, detectedLang),
+        parserMessage: result.errorMessage || entry.parserFallback,
+      });
+      outputEditor.setValue(errorBanner + rawInput);
+      if (result.errorPosition) {
+        showErrorMark(result.errorPosition);
+      } else {
+        clearErrorMarks();
+      }
+    } else {
+      outputEditor.setValue(result.formatted);
+      outputEditor.getWrapperElement().classList.remove('error-output');
+      clearErrorMarks();
     }
   }
 

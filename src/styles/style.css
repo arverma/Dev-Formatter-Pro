@@ -504,6 +504,38 @@ body.dark-mode .cm-error-line {
   border-bottom: 2px solid var(--accent-red);
 }
 
+/* ─── Fold gutter (brace / indent) ────────────────────────────────────────── */
+.CodeMirror-foldgutter {
+  width: 14px;
+}
+
+.CodeMirror-foldgutter-open,
+.CodeMirror-foldgutter-folded {
+  color: var(--text-tertiary);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.CodeMirror-foldgutter-open:hover,
+.CodeMirror-foldgutter-folded:hover {
+  color: var(--accent);
+}
+
+.CodeMirror-foldmarker {
+  color: var(--accent);
+  text-shadow: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+  padding: 0 4px;
+  margin: 0 2px;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-pill);
+  background: var(--accent-subtle);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 /* ─── Branded CodeMirror Themes ───────────────────────────────────────────── */
 .cm-s-dev-formatter-light.CodeMirror,
 .cm-s-dev-formatter-dark.CodeMirror {

@@ -70,6 +70,10 @@ function copyAssets() {
       `${DIST}/codemirror/addon/fold/${file}`
     );
   }
+  copyFileSync(
+    'node_modules/codemirror/addon/fold/indent-fold.js',
+    `${DIST}/codemirror/addon/fold/indent-fold.js`
+  );
 
   // Copy only the curated CodeMirror themes used by the editor picker
   const cmThemesSrc = 'node_modules/codemirror/theme';

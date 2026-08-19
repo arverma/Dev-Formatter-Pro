@@ -1,31 +1,27 @@
-# Contributing to JSON Formatter Pro
-
-Thank you for your interest in contributing! 🎉
+# Contributing to Dev Formatter Pro
 
 ## How to Contribute
 
-- **Report bugs or request features:**
-  - Open an [issue](https://github.com/YOUR_USERNAME/YOUR_REPO/issues) with a clear description.
-  - Screenshots, error messages, and steps to reproduce are very helpful!
+- **Bugs / features:** Open an [issue](https://github.com/arverma/Json-Formatter/issues) with steps to reproduce (and a screenshot if useful).
+- **Pull requests:** Fork, branch (`git checkout -b feature/my-feature`), commit, push, and open a PR.
 
-- **Submit a pull request:**
-  1. Fork the repository
-  2. Create a new branch (`git checkout -b feature/my-feature`)
-  3. Make your changes
-  4. Commit and push (`git commit -am 'Add my feature' && git push`)
-  5. Open a pull request and describe your changes
+## Local setup
+
+```bash
+npm install
+npm run typecheck
+npm test
+npm run build
+```
+
+Load **`dist/`** as an unpacked extension in Chrome to try UI changes.
 
 ## Coding Style
 
-- Use clear, descriptive commit messages
-- Keep code clean and readable
-- Follow the existing style for JS and CSS (indent with 2 spaces)
-- Test your changes before submitting
+- TypeScript and CSS, 2-space indent, match existing style.
+- Keep formatting logic in `src/utils/` and cover it with tests when you change behavior.
+- Clear commit messages.
 
 ## Code of Conduct
 
-Be respectful and welcoming to all contributors. We want this project to be a friendly place for everyone!
-
----
-
-Thanks for helping make JSON Formatter Pro better! 🚀 
+Be respectful. Thanks for helping improve Dev Formatter Pro.

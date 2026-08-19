@@ -1,34 +1,34 @@
-# JSON Formatter Pro
+# Dev Formatter Pro
 
-A minimalist, beautiful Chrome extension for formatting, validating, and editing JSON in a side panel.
-
-## Screenshots
-
-Light mode:
-![Light mode screenshot](screenshots/light-mode.png)
-
-Dark mode:
-![Dark mode screenshot](screenshots/dark-mode.png)
+A Chrome MV3 side panel for formatting, validating, and editing **JSON** and **SQL** (default **Trino**, plus 19 dialects via `sql-formatter`).
 
 ## Features
-- Two CodeMirror editors (input/output) with line numbers and syntax highlighting
-- Draggable splitter for resizing
-- Light/dark mode toggle
-- Always-visible gutters
-- Robust Chrome extension side panel logic
-- Clean, modern UI/UX
+- **Auto-detect** JSON vs SQL (comment-aware), with a manual Auto / JSON / SQL override.
+- **SQL dialects**: Trino / Presto (default), BigQuery, PostgreSQL, Snowflake, MySQL, Spark, ClickHouse, TiDB, and more.
+- **JSON tools**: pretty-print or minify, plus escape / unescape as a JSON string.
+- **Copy**, **editor themes** (dark, light, and a few CodeMirror themes), and a **resizable** split view. Settings persist locally.
+- **Context menu**: “Format with Dev Formatter Pro” on selected text.
+- **Offline**: formatting runs in the browser; nothing is sent to a server.
 
-## Install
+## Getting Started
 
-1. Clone this repo
-2. Go to `chrome://extensions` and enable Developer Mode
-3. Click "Load unpacked" and select this folder
+**Prerequisites:** Node.js 18+ and npm.
 
-## Contributing
+```bash
+npm install
+npm run build
+```
 
-Pull requests and issues are welcome!
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines (or just open an issue/PR if you have an idea).
+Watch: `npm run watch` · Tests: `npm test` · Types: `npm run typecheck`
+
+### Load in Chrome
+1. Open `chrome://extensions` and enable **Developer mode**.
+2. **Load unpacked** and choose the **`dist/`** folder (not the repo root).
+
+## Architecture
+- `src/script.ts` — side panel UI and CodeMirror.
+- `src/background.ts` — MV3 service worker (toolbar, side panel, context menu).
+- `src/utils/` — language detection, JSON/SQL formatters, JSON escape, pending selection.
 
 ## License
-
-MIT 
+MIT

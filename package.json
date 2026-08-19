@@ -7,11 +7,12 @@
     "build": "node build.mjs",
     "icons": "node generate_icons.mjs",
     "watch": "node build.mjs --watch",
-    "test": "node --import tsx/esm --test tests/utils.test.ts",
+    "test": "node --import tsx/esm --test tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.300",
+    "@types/diff": "^7.0.2",
     "@types/node": "^26.2.0",
     "codemirror": "^5.65.0",
     "esbuild": "^0.25.0",
@@ -19,6 +20,7 @@
     "typescript": "^5.5.0"
   },
   "dependencies": {
+    "diff": "^9.0.0",
     "sql-formatter": "^15.0.0"
   }
 }

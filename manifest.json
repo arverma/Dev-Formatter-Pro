@@ -1,20 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "JSON Formatter",
-  "version": "1.0",
-  "description": "A minimalist JSON formatter that respects your privacy. Format, validate, edit, and copy JSON with ease.",
+  "name": "Dev Formatter Pro",
+  "version": "1.1.0",
+  "description": "A minimalist dev formatter for JSON and SQL. Format, validate, and copy with ease.",
   "permissions": [
     "tabs",
     "storage",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "contextMenus"
   ],
   "host_permissions": ["<all_urls>"],
   "side_panel": {
     "default_path": "sidepanel.html"
   },
   "action": {
-    "default_title": "Open JSON Formatter"
+    "default_title": "Open Dev Formatter Pro"
   },
   "background": {
     "service_worker": "background.js"
@@ -24,4 +25,4 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   }
-} 
+}

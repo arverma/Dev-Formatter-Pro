@@ -1,7 +1,5 @@
 /**
- * src/utils/jsonFormatter.ts
- *
- * JSON formatting utility for Dev Formatter Pro.
+ * JSON formatting for Dev Formatter Pro.
  *
  * Features:
  *   - Pretty-printing (2-space indent) or compact minify (indent 0)
@@ -14,25 +12,16 @@ import {
   parseLineColumn,
   parsePositionIndex,
   lineColToOffset,
-  type ErrorPosition,
-} from './errorPosition';
+} from '../../core/errorPosition';
+import type { FormatResult } from '../../core/format';
 
-export interface JsonFormatResult {
-  /** Formatted JSON string, or original raw input on error. */
-  formatted: string;
-  /** True when the input could not be parsed as valid JSON. */
-  isError: boolean;
-  /** The raw error message from JSON.parse, if applicable. */
-  errorMessage?: string;
-  /** 0-based editor coordinates when the parse error location is known. */
-  errorPosition?: ErrorPosition;
-}
+export type JsonFormatResult = FormatResult;
 
 function parseJsonErrorPosition(
   raw: string,
   parsedText: string,
   errorMessage: string
-): ErrorPosition | undefined {
+) {
   const positionIndex = parsePositionIndex(errorMessage);
   if (positionIndex !== undefined) {
     return mapParsedOffsetToRaw(raw, parsedText, positionIndex);

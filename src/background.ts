@@ -2,7 +2,7 @@
 // Service worker for Dev Formatter Pro Chrome extension.
 // Handles side panel open/close logic, tab updates, context menu, and state.
 
-import { PENDING_INPUT_KEY, PendingInput } from './utils/pendingInput';
+import { PENDING_INPUT_KEY, PendingInput } from './core/pendingInput';
 
 const panelState: Record<number, boolean> = {};
 const CONTEXT_MENU_ID = 'format-with-dev-formatter-pro';

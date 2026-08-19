@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { detectLanguage, stripLeadingComments } from '../src/utils/detectLanguage.js';
-import { formatSql, SQL_DIALECTS, DEFAULT_SQL_DIALECT } from '../src/utils/sqlFormatter.js';
-import { formatJson } from '../src/utils/jsonFormatter.js';
-import { escapeJsonString, unescapeJsonString } from '../src/utils/jsonEscape.js';
+import { detectLanguage, stripLeadingComments } from '../src/core/detectLanguage.js';
+import { buildErrorBanner } from '../src/core/errorBanner.js';
+import { formatSql } from '../src/features/sql/formatSql.js';
+import { SQL_DIALECTS, DEFAULT_SQL_DIALECT } from '../src/features/sql/dialects.js';
+import { formatJson } from '../src/features/json/formatJson.js';
+import { escapeJsonString, unescapeJsonString } from '../src/features/json/jsonEscape.js';
+import { getFormatter, mismatchHint } from '../src/features/registry.js';
 
 test('stripLeadingComments should strip line, block, and hash comments', () => {
   assert.equal(
@@ -178,4 +181,78 @@ test('escapeJsonString / unescapeJsonString are one-layer and no-op on failure',
   const objectJson = unescapeJsonString('{"a":1}');
   assert.equal(objectJson.isError, true);
   assert.equal(objectJson.value, '{"a":1}');
+});
+
+test('error banners match the side-panel copy for all hint variants', () => {
+  const sql = getFormatter('sql');
+  const json = getFormatter('json');
+  const dialect = 'trino';
+
+  assert.equal(
+    buildErrorBanner({
+      commentPrefix: sql.commentPrefix,
+      title: sql.errorTitle({ dialect }),
+      hint: mismatchHint(sql, 'json'),
+      parserMessage: 'boom',
+    }),
+    [
+      '-- ⚠️ Unable to format as SQL (trino)',
+      '-- 💡 Hint: The input appears to be JSON. Click "JSON" or "Auto" in the top bar to format as JSON.',
+      '-- ─────────────────────────────────────────────────────────────────',
+      '-- Parser: boom',
+      '',
+      '',
+    ].join('\n')
+  );
+
+  assert.equal(
+    buildErrorBanner({
+      commentPrefix: sql.commentPrefix,
+      title: sql.errorTitle({ dialect }),
+      hint: mismatchHint(sql, 'sql'),
+      parserMessage: sql.parserFallback,
+    }),
+    [
+      '-- ⚠️ Unable to format as SQL (trino)',
+      '-- 💡 Hint: Check for incomplete SQL syntax or dialect mismatches.',
+      '-- ─────────────────────────────────────────────────────────────────',
+      '-- Parser: Syntax error',
+      '',
+      '',
+    ].join('\n')
+  );
+
+  assert.equal(
+    buildErrorBanner({
+      commentPrefix: json.commentPrefix,
+      title: json.errorTitle({ dialect }),
+      hint: mismatchHint(json, 'sql'),
+      parserMessage: 'Unexpected token',
+    }),
+    [
+      '// ⚠️ Unable to format as JSON',
+      '// 💡 Hint: The input appears to be SQL. Click "SQL" or "Auto" in the top bar to format as SQL.',
+      '// ─────────────────────────────────────────────────────────────────',
+      '// Parser: Unexpected token',
+      '',
+      '',
+    ].join('\n')
+  );
+
+  assert.equal(
+    buildErrorBanner({
+      commentPrefix: json.commentPrefix,
+      title: json.errorTitle({ dialect }),
+      hint: mismatchHint(json, 'unknown'),
+      parserMessage: json.parserFallback,
+    }),
+    [
+      '// ⚠️ Unable to format as JSON',
+      '// 💡 Hint: Check for missing quotes around keys, trailing commas, or unmatched braces.',
+      '// ─────────────────────────────────────────────────────────────────',
+      '// Parser: Invalid JSON',
+      '',
+      '',
+    ].join('\n')
+  );
 });

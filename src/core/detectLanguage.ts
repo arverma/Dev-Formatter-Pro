@@ -1,6 +1,4 @@
 /**
- * src/utils/detectLanguage.ts
- *
  * Heuristic-based detection of whether a given string is JSON or SQL.
  *
  * Detection order:

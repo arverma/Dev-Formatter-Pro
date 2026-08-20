@@ -1,4 +1,4 @@
-# Contributing to Dev Formatter Pro
+# Contributing to Dev ToolBox Pro
 
 ## How to Contribute
 
@@ -24,4 +24,4 @@ Load **`dist/`** as an unpacked extension in Chrome to try UI changes.
 
 ## Code of Conduct
 
-Be respectful. Thanks for helping improve Dev Formatter Pro.
+Be respectful. Thanks for helping improve Dev ToolBox Pro.

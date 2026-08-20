@@ -1,5 +1,5 @@
 /**
- * SQL formatting for Dev Formatter Pro.
+ * SQL formatting for Dev ToolBox Pro.
  *
  * Wraps the `sql-formatter` npm package with:
  *   - Structured result with safe error handling (no unhandled exceptions)

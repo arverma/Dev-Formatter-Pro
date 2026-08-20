@@ -1,5 +1,5 @@
 // build.mjs
-// esbuild build script for Dev Formatter Pro Chrome extension.
+// esbuild build script for Dev ToolBox Pro Chrome extension.
 // Bundles TypeScript source → dist/, then copies all static assets.
 
 import * as esbuild from 'esbuild';

@@ -1,17 +1,17 @@
 // src/background.ts
-// Service worker for Dev Formatter Pro Chrome extension.
+// Service worker for Dev ToolBox Pro Chrome extension.
 // Handles side panel open/close logic, tab updates, context menu, and state.
 
 import { PENDING_INPUT_KEY, PendingInput } from './core/pendingInput';
 
 const panelState: Record<number, boolean> = {};
-const CONTEXT_MENU_ID = 'format-with-dev-formatter-pro';
+const CONTEXT_MENU_ID = 'format-with-dev-toolbox-pro';
 
 function registerContextMenu() {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: CONTEXT_MENU_ID,
-      title: 'Format with Dev Formatter Pro',
+      title: 'Format with Dev ToolBox Pro',
       contexts: ['selection'],
     });
   });

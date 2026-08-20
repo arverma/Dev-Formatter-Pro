@@ -1,5 +1,5 @@
 // src/script.ts
-// Dev Formatter Pro — Apple Minimalist Controller (Integrated Themes, Zero Duplicate Headers)
+// Dev ToolBox Pro — Apple Minimalist Controller (Integrated Themes, Zero Duplicate Headers)
 // Seamless theme synchronization, auto-detection, dialect selection, and SVG interactions.
 
 import { detectLanguage, DetectedLanguage } from './core/detectLanguage';
@@ -39,8 +39,8 @@ interface EditorThemeOption {
 }
 
 const EDITOR_THEMES: EditorThemeOption[] = [
-  { label: 'Dev Formatter Dark', value: 'dev-formatter-dark', isDark: true },
-  { label: 'Dev Formatter Light', value: 'dev-formatter-light', isDark: false },
+  { label: 'Dev ToolBox Dark', value: 'dev-formatter-dark', isDark: true },
+  { label: 'Dev ToolBox Light', value: 'dev-formatter-light', isDark: false },
   { label: 'Dracula', value: 'dracula', cssFile: 'dracula.css', isDark: true },
   { label: 'Material Darker', value: 'material-darker', cssFile: 'material-darker.css', isDark: true },
   { label: 'Monokai', value: 'monokai', cssFile: 'monokai.css', isDark: true },

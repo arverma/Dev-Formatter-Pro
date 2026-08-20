@@ -1,5 +1,5 @@
 /**
- * JSON formatting for Dev Formatter Pro.
+ * JSON formatting for Dev ToolBox Pro.
  *
  * Features:
  *   - Pretty-printing (2-space indent) or compact minify (indent 0)

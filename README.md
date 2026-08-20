@@ -10,6 +10,7 @@ This repository is a **Chrome extension**, not an npm library. Load the built `d
 - **JSON tools** — pretty-print or minify; escape / unescape as a JSON string.
 - **Decode** — Base64, JWT (header/payload, signature not verified), URL, Unicode escapes; auto-detect or pinned kind.
 - **Encode** — Base64.
+- **Convert** — Unix epoch ↔ human timestamp (seconds/ms/µs/ns auto-detect) with IANA timezone support.
 - **Diff** — side-by-side JSON/SQL with line highlights (semantic format when pasting / entering Diff).
 - **Find / replace** — CodeMirror search with match counts.
 - **Editor themes**, resizable split, cursor pill; prefs and drafts persist locally.
@@ -37,7 +38,8 @@ Useful scripts:
 | `npm run watch` | Rebuild on change |
 | `npm test` | Unit tests (`core` / `features`) |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run icons` | Regenerate PNG icons |
+| `npm run icons` | Regenerate PNG icons (16 / 32 / 48 / 128) |
+| `npm run pack` | Build and zip `dist/` to `store/dev-toolbox-pro-<version>.zip` |
 
 ### Load in Chrome
 
@@ -50,7 +52,7 @@ Useful scripts:
 ```
 src/
   core/                 # Pure primitives (language detect, error positions, banners, pending-input contract)
-  features/             # Pure feature logic (JSON/SQL format, decode/encode, diff)
+  features/             # Pure feature logic (JSON/SQL format, decode/encode, epoch convert, diff)
   extension/
     background/         # MV3 service worker modules (panel toggle, context menu, messages)
     panel/              # Side panel UI (editors, workspaces, persistence, chrome handoff)
@@ -74,6 +76,8 @@ Formatting and decode logic under `core/` and `features/` is unit-tested and reu
 - All processing runs in the extension (side panel / service worker).
 - Editor drafts and prefs use `localStorage` (size-capped); context-menu handoff uses `chrome.storage.local`.
 - Nothing is sent to a remote server by this extension.
+
+Full policy: [PRIVACY.md](PRIVACY.md) (HTML: [docs/privacy.html](docs/privacy.html)). Chrome Web Store listing copy and permission justifications: [store/LISTING.md](store/LISTING.md).
 
 ## Contributing
 

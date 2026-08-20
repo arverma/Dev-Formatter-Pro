@@ -37,6 +37,7 @@
               <button type="button" class="shell-picker-option" data-shell="formatter" role="option">Format</button>
               <button type="button" class="shell-picker-option" data-shell="decode" role="option">Decode</button>
               <button type="button" class="shell-picker-option" data-shell="encode" role="option">Encode</button>
+              <button type="button" class="shell-picker-option" data-shell="convert" role="option">Convert</button>
               <button type="button" class="shell-picker-option" data-shell="diff" role="option">Diff</button>
             </div>
           </div>
@@ -65,6 +66,19 @@
           <div id="encodeControls" class="encode-controls" hidden>
             <div class="segmented-control">
               <button type="button" class="segment-btn active" data-encode="base64">Base64</button>
+            </div>
+          </div>
+          <div id="convertControls" class="convert-controls" hidden>
+            <div class="segmented-control">
+              <button type="button" class="segment-btn active" data-convert="auto">Auto</button>
+              <button type="button" class="segment-btn" data-convert="epoch">Epoch</button>
+              <button type="button" class="segment-btn" data-convert="date">Date</button>
+            </div>
+            <div class="dialect-picker" id="tzPicker">
+              <button type="button" id="tzPickerBtn" class="glass-pill action-pill dialect-picker-btn" aria-label="Timezone" aria-haspopup="listbox" aria-expanded="false" title="Timezone">
+                <span id="tzPickerLabel">Local</span>
+              </button>
+              <div class="dialect-picker-menu" id="tzPickerMenu" hidden role="listbox" aria-label="Timezone"></div>
             </div>
           </div>
         </div>

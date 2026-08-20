@@ -27,7 +27,7 @@ Load **`dist/`** as an unpacked extension in Chrome to try UI changes. After edi
 | Extension UI / SW | `src/extension/` | `core`, `features`, DOM, Chrome APIs |
 | Entrypoints | `src/background.ts`, `src/script.ts` | extension modules only |
 
-- Put **pure** formatting / decode / diff logic in `core/` or `features/` and cover it with tests under `tests/`.
+- Put **pure** formatting / decode / convert / diff logic in `core/` or `features/` and cover it with tests under `tests/`.
 - Put **Chrome / DOM** wiring in `src/extension/background/` or `src/extension/panel/`.
 - Do **not** grow the thin entry files into god-objects again — extend the right module under `extension/`.
 
@@ -44,6 +44,7 @@ After loading `dist/`:
 - [ ] Format JSON/SQL (live update after a short pause while typing)
 - [ ] Diff: paste both sides → highlights; typing does not fully rewrite panes
 - [ ] Decode / Encode Base64 (and JWT if touched)
+- [ ] Convert: epoch ↔ date with timezone (Local / UTC / IANA)
 - [ ] Find in editor still works
 - [ ] Extension icon opens/closes the side panel; closing with Chrome’s X still lets the icon reopen
 - [ ] Context menu “Format with Dev ToolBox Pro” on an https page pastes selection into the panel

@@ -4,6 +4,7 @@ import type { PanelContext, Shell } from '../context';
 const FORMAT_INPUT_WM = 'Paste or type JSON or SQL…';
 const DECODE_INPUT_WM = 'Paste Base64, URL, Unicode, or JWT…';
 const ENCODE_INPUT_WM = 'Paste text to encode as Base64…';
+const CONVERT_INPUT_WM = 'Paste a Unix timestamp or a date…';
 const DIFF_A_WM = 'Paste original JSON or SQL…';
 const DIFF_B_WM = 'Paste modified JSON or SQL…';
 
@@ -11,6 +12,7 @@ const SHELL_LABELS: Record<Shell, string> = {
   formatter: 'Format',
   decode: 'Decode',
   encode: 'Encode',
+  convert: 'Convert',
   diff: 'Diff',
 };
 
@@ -21,6 +23,9 @@ export function bindShellWorkspace(ctx: PanelContext) {
       ctx.outputWatermark.classList.add('hidden');
     } else if (ctx.shell === 'encode') {
       ctx.inputWatermark.textContent = ENCODE_INPUT_WM;
+      ctx.outputWatermark.classList.add('hidden');
+    } else if (ctx.shell === 'convert') {
+      ctx.inputWatermark.textContent = CONVERT_INPUT_WM;
       ctx.outputWatermark.classList.add('hidden');
     } else if (ctx.workspace === 'diff') {
       ctx.inputWatermark.textContent = DIFF_A_WM;
@@ -35,6 +40,7 @@ export function bindShellWorkspace(ctx: PanelContext) {
     ctx.formatterControls.hidden = ctx.shell !== 'formatter' && ctx.shell !== 'diff';
     ctx.decodeControls.hidden = ctx.shell !== 'decode';
     ctx.encodeControls.hidden = ctx.shell !== 'encode';
+    ctx.convertControls.hidden = ctx.shell !== 'convert';
     ctx.shellPickerLabel.textContent = SHELL_LABELS[ctx.shell];
     ctx.shellPickerMenu
       .querySelectorAll<HTMLButtonElement>('.shell-picker-option')
@@ -46,6 +52,9 @@ export function bindShellWorkspace(ctx: PanelContext) {
       });
     ctx.decodeKindButtons.forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.decode === ctx.decodeKind);
+    });
+    ctx.convertDirectionButtons.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.convert === ctx.convertDirection);
     });
     if (ctx.shell === 'diff') {
       ctx.outputEditor.setOption('readOnly', false);
@@ -82,6 +91,11 @@ export function bindShellWorkspace(ctx: PanelContext) {
       ctx.outputEditor.setValue('');
       ctx.ignoreEditorChange = false;
       ctx.scheduleDecode();
+    } else if (ctx.shell === 'convert') {
+      ctx.ignoreEditorChange = true;
+      ctx.outputEditor.setValue('');
+      ctx.ignoreEditorChange = false;
+      ctx.scheduleConvert();
     } else if (ctx.shell === 'diff') {
       const savedB = loadDiffBState();
       ctx.ignoreEditorChange = true;

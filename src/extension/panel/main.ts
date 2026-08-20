@@ -8,6 +8,7 @@ import {
 } from '../../features/json/jsonEscape';
 import { SQL_DIALECTS, DEFAULT_SQL_DIALECT } from '../../features/sql/dialects';
 import type { DecodeKind } from '../../features/decode/types';
+import type { ConvertDirection } from '../../features/convert/types';
 
 import type {
   DecodeKindState,
@@ -29,6 +30,8 @@ import {
   WORKSPACE_KEY,
   SHELL_KEY,
   DECODE_KIND_KEY,
+  CONVERT_DIR_KEY,
+  CONVERT_TZ_KEY,
   loadInputState,
   loadDiffBState,
   saveInputState,
@@ -46,6 +49,7 @@ import { createSyntaxErrorController } from './editors/syntaxErrors';
 import { createDiffMarksController } from './editors/diffMarks';
 import { bindFormatWorkspace } from './workspaces/format';
 import { bindDecodeWorkspace } from './workspaces/decode';
+import { bindConvertWorkspace } from './workspaces/convert';
 import { bindDiffWorkspace } from './workspaces/diff';
 import { bindScheduleWorkspace } from './workspaces/schedule';
 import { bindShellWorkspace } from './workspaces/shell';
@@ -84,7 +88,15 @@ function createPanelApp() {
   const formatterControls = document.getElementById('formatterControls') as HTMLElement;
   const decodeControls = document.getElementById('decodeControls') as HTMLElement;
   const encodeControls = document.getElementById('encodeControls') as HTMLElement;
+  const convertControls = document.getElementById('convertControls') as HTMLElement;
   const decodeKindButtons = document.querySelectorAll<HTMLButtonElement>('.segment-btn[data-decode]');
+  const convertDirectionButtons = document.querySelectorAll<HTMLButtonElement>(
+    '.segment-btn[data-convert]'
+  );
+  const tzPicker = document.getElementById('tzPicker') as HTMLElement;
+  const tzPickerBtn = document.getElementById('tzPickerBtn') as HTMLButtonElement;
+  const tzPickerMenu = document.getElementById('tzPickerMenu') as HTMLElement;
+  const tzPickerLabel = document.getElementById('tzPickerLabel') as HTMLElement;
   const themePicker = document.getElementById('themePicker') as HTMLElement;
   const themePickerBtn = document.getElementById('themePickerBtn') as HTMLButtonElement;
   const themePickerMenu = document.getElementById('themePickerMenu') as HTMLElement;
@@ -92,6 +104,7 @@ function createPanelApp() {
   document.body.appendChild(shellPickerMenu);
   document.body.appendChild(themePickerMenu);
   document.body.appendChild(dialectPickerMenu);
+  document.body.appendChild(tzPickerMenu);
 
   // ─── State ───────────────────────────────────────────────────────────────
   const savedInputState = loadInputState();
@@ -101,6 +114,7 @@ function createPanelApp() {
     savedShell === 'decode' ||
     savedShell === 'diff' ||
     savedShell === 'encode' ||
+    savedShell === 'convert' ||
     savedShell === 'formatter'
       ? savedShell
       : localStorage.getItem('devFormatterBase64Direction') === 'encode'
@@ -120,6 +134,22 @@ function createPanelApp() {
   ) {
     decodeKind = 'auto';
   }
+  let convertDirection: ConvertDirection =
+    (localStorage.getItem(CONVERT_DIR_KEY) as ConvertDirection) || 'auto';
+  if (
+    convertDirection !== 'auto' &&
+    convertDirection !== 'epoch' &&
+    convertDirection !== 'date'
+  ) {
+    convertDirection = 'auto';
+  }
+  let localTimeZone = 'UTC';
+  try {
+    localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    localTimeZone = 'UTC';
+  }
+  let convertTimeZone = localStorage.getItem(CONVERT_TZ_KEY) || 'local';
   let currentMode: ManualMode =
     (localStorage.getItem(MODE_KEY) as ManualMode) || 'auto';
   let currentDialect: string =
@@ -161,6 +191,68 @@ function createPanelApp() {
   }
   syncDialectPicker();
 
+  // ─── Populate Timezone Menu ──────────────────────────────────────────────
+  function listTimeZones(): string[] {
+    try {
+      const intlAny = Intl as typeof Intl & {
+        supportedValuesOf?: (key: string) => string[];
+      };
+      if (typeof intlAny.supportedValuesOf === 'function') {
+        return intlAny.supportedValuesOf('timeZone');
+      }
+    } catch {
+      // ignore
+    }
+    return ['UTC', 'America/New_York', 'Europe/London', 'Asia/Kolkata', 'Asia/Tokyo'];
+  }
+
+  const tzOptions: { value: string; label: string }[] = [
+    { value: 'local', label: `Local (${localTimeZone})` },
+    { value: 'UTC', label: 'UTC' },
+  ];
+  for (const z of listTimeZones()) {
+    if (z === 'UTC') continue;
+    tzOptions.push({ value: z, label: z });
+  }
+  if (
+    convertTimeZone !== 'local' &&
+    convertTimeZone !== 'UTC' &&
+    !tzOptions.some((o) => o.value === convertTimeZone)
+  ) {
+    convertTimeZone = 'local';
+  }
+
+  tzOptions.forEach((z) => {
+    const opt = document.createElement('button');
+    opt.type = 'button';
+    opt.className = 'dialect-picker-option';
+    opt.role = 'option';
+    opt.dataset.value = z.value;
+    opt.textContent = z.label;
+    tzPickerMenu.appendChild(opt);
+  });
+
+  function resolveConvertTimeZone(): string {
+    return convertTimeZone === 'local' ? localTimeZone : convertTimeZone;
+  }
+
+  function syncTzPicker() {
+    const matched =
+      tzOptions.find((z) => z.value === convertTimeZone) || tzOptions[0];
+    tzPickerLabel.textContent =
+      convertTimeZone === 'local' ? 'Local' : matched.label;
+    tzPickerBtn.title = matched.label;
+    tzPickerMenu
+      .querySelectorAll<HTMLButtonElement>('.dialect-picker-option')
+      .forEach((btn) => {
+        btn.setAttribute(
+          'aria-selected',
+          btn.dataset.value === matched.value ? 'true' : 'false'
+        );
+      });
+  }
+  syncTzPicker();
+
   // ─── Populate Theme Menu ─────────────────────────────────────────────────
   EDITOR_THEMES.forEach((t) => {
     const opt = document.createElement('button');
@@ -180,7 +272,7 @@ function createPanelApp() {
     theme: currentEditorTheme,
     inputValue: savedInputState?.value ?? '',
     outputValue:
-      shell === 'decode' || shell === 'encode'
+      shell === 'decode' || shell === 'encode' || shell === 'convert'
         ? ''
         : workspace === 'diff'
           ? (savedDiffBState?.value ?? '')
@@ -277,6 +369,8 @@ function createPanelApp() {
     shellPickerBtn,
     dialectPickerMenu,
     dialectPickerBtn,
+    tzPickerMenu,
+    tzPickerBtn,
   });
 
   function applyCurrentTheme(themeValue: string) {
@@ -331,6 +425,13 @@ function createPanelApp() {
     ) {
       menus.setDialectMenuOpen(false);
     }
+    if (
+      !tzPickerMenu.hidden &&
+      !tzPicker.contains(t) &&
+      !tzPickerMenu.contains(t)
+    ) {
+      menus.setTzMenuOpen(false);
+    }
   });
 
   document.addEventListener('keydown', (e) => {
@@ -346,6 +447,10 @@ function createPanelApp() {
     if (!dialectPickerMenu.hidden) {
       menus.setDialectMenuOpen(false);
       dialectPickerBtn.focus();
+    }
+    if (!tzPickerMenu.hidden) {
+      menus.setTzMenuOpen(false);
+      tzPickerBtn.focus();
     }
     search.closeAllSearchUi();
   });
@@ -408,9 +513,14 @@ function createPanelApp() {
     formatterControls,
     decodeControls,
     encodeControls,
+    convertControls,
     shellPickerLabel,
     shellPickerMenu,
     decodeKindButtons,
+    convertDirectionButtons,
+    tzPickerLabel,
+    tzPickerMenu,
+    tzPickerBtn,
     get shell() {
       return shell;
     },
@@ -428,6 +538,18 @@ function createPanelApp() {
     },
     set decodeKind(v: DecodeKindState) {
       decodeKind = v;
+    },
+    get convertDirection() {
+      return convertDirection;
+    },
+    set convertDirection(v: ConvertDirection) {
+      convertDirection = v;
+    },
+    get convertTimeZone() {
+      return convertTimeZone;
+    },
+    set convertTimeZone(v: string) {
+      convertTimeZone = v;
     },
     get currentMode() {
       return currentMode;
@@ -451,6 +573,7 @@ function createPanelApp() {
     focusedPane: 'input' as const,
     workspaceRunTimer: null as number | null,
     decodeRunTimer: null as number | null,
+    convertRunTimer: null as number | null,
     clearDiffMarks: diffMarks.clearDiffMarks,
     applyDiffMarks: diffMarks.applyDiffMarks,
     clearErrorMarks: syntax.clearErrorMarks,
@@ -462,10 +585,14 @@ function createPanelApp() {
     hideLanguageChrome,
     persistDiffBNow,
     loadDiffBState,
+    resolveConvertTimeZone,
+    syncTzPicker,
     // Filled by bind* below
     runFormatting: () => {},
     runDecode: () => {},
     scheduleDecode: () => {},
+    runConvert: () => {},
+    scheduleConvert: () => {},
     runDiff: (_options?: { prettyPrint?: boolean }) => {},
     scheduleWorkspace: (_options?: { prettyPrintDiff?: boolean }) => {},
     runWorkspace: (_options?: { prettyPrintDiff?: boolean }) => {},
@@ -478,6 +605,7 @@ function createPanelApp() {
 
   bindFormatWorkspace(ctx);
   bindDecodeWorkspace(ctx);
+  bindConvertWorkspace(ctx);
   bindDiffWorkspace(ctx);
   bindScheduleWorkspace(ctx);
   bindShellWorkspace(ctx);
@@ -516,6 +644,8 @@ function createPanelApp() {
     persistInputStateSoon();
     if (ctx.shell === 'decode' || ctx.shell === 'encode') {
       ctx.scheduleDecode();
+    } else if (ctx.shell === 'convert') {
+      ctx.scheduleConvert();
     } else if (ctx.shell === 'diff' && isPasteOrigin(changeObj?.origin)) {
       ctx.scheduleWorkspace({ prettyPrintDiff: true });
     } else {
@@ -580,6 +710,37 @@ function createPanelApp() {
       });
       ctx.scheduleDecode();
     });
+  });
+
+  convertDirectionButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = (btn.dataset.convert as ConvertDirection) || 'auto';
+      ctx.convertDirection = next;
+      localStorage.setItem(CONVERT_DIR_KEY, ctx.convertDirection);
+      convertDirectionButtons.forEach((b) => {
+        b.classList.toggle('active', b.dataset.convert === ctx.convertDirection);
+      });
+      ctx.scheduleConvert();
+    });
+  });
+
+  tzPickerBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menus.setTzMenuOpen(tzPickerMenu.hidden);
+  });
+
+  tzPickerMenu.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
+      '.dialect-picker-option'
+    );
+    if (!btn?.dataset.value) return;
+    ctx.convertTimeZone = btn.dataset.value;
+    localStorage.setItem(CONVERT_TZ_KEY, ctx.convertTimeZone);
+    syncTzPicker();
+    menus.setTzMenuOpen(false);
+    if (ctx.shell === 'convert') {
+      ctx.scheduleConvert();
+    }
   });
 
   dialectPickerBtn.addEventListener('click', (e) => {
@@ -694,9 +855,11 @@ function createPanelApp() {
     outputEditor,
   });
 
-  // Run initial formatting / diff / decode pass
+  // Run initial formatting / diff / decode / convert pass
   if (ctx.shell === 'decode' || ctx.shell === 'encode') {
     ctx.scheduleDecode();
+  } else if (ctx.shell === 'convert') {
+    ctx.scheduleConvert();
   } else if (ctx.workspace === 'diff') {
     ctx.runDiff({ prettyPrint: true });
   } else {

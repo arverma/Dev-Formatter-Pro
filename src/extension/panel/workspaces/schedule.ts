@@ -1,9 +1,15 @@
 import type { PanelContext } from '../context';
 
+function isDecodeLike(shell: PanelContext['shell']): boolean {
+  return shell === 'decode' || shell === 'encode';
+}
+
 export function bindScheduleWorkspace(ctx: PanelContext) {
   function runWorkspace(options?: { prettyPrintDiff?: boolean }) {
-    if (ctx.shell === 'decode' || ctx.shell === 'encode') {
+    if (isDecodeLike(ctx.shell)) {
       ctx.scheduleDecode();
+    } else if (ctx.shell === 'convert') {
+      ctx.scheduleConvert();
     } else if (ctx.workspace === 'diff') {
       ctx.runDiff({ prettyPrint: options?.prettyPrintDiff === true });
     } else {
@@ -11,7 +17,7 @@ export function bindScheduleWorkspace(ctx: PanelContext) {
     }
   }
 
-  /** Debounce format/diff while typing (decode keeps its own timer). */
+  /** Debounce format/diff while typing (decode/convert keep their own timers). */
   function scheduleWorkspace(options?: { prettyPrintDiff?: boolean }) {
     if (ctx.workspaceRunTimer !== null) clearTimeout(ctx.workspaceRunTimer);
     const prettyPrintDiff = options?.prettyPrintDiff === true;
@@ -34,22 +40,29 @@ export function bindScheduleWorkspace(ctx: PanelContext) {
     runWorkspace({ prettyPrintDiff: true });
   }
 
-  /** Flush pending format/diff/decode before hide so output is not stale. */
+  /** Flush pending format/diff/decode/convert before hide so output is not stale. */
   function flushWorkspaceTimers() {
     if (ctx.workspaceRunTimer !== null) {
       clearTimeout(ctx.workspaceRunTimer);
       ctx.workspaceRunTimer = null;
       if (ctx.workspace === 'diff') {
         ctx.runDiff({ prettyPrint: false });
-      } else if (ctx.shell !== 'decode' && ctx.shell !== 'encode') {
+      } else if (!isDecodeLike(ctx.shell) && ctx.shell !== 'convert') {
         ctx.runFormatting();
       }
     }
     if (ctx.decodeRunTimer !== null) {
       clearTimeout(ctx.decodeRunTimer);
       ctx.decodeRunTimer = null;
-      if (ctx.shell === 'decode' || ctx.shell === 'encode') {
+      if (isDecodeLike(ctx.shell)) {
         ctx.runDecode();
+      }
+    }
+    if (ctx.convertRunTimer !== null) {
+      clearTimeout(ctx.convertRunTimer);
+      ctx.convertRunTimer = null;
+      if (ctx.shell === 'convert') {
+        ctx.runConvert();
       }
     }
   }

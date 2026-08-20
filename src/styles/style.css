@@ -156,7 +156,8 @@ html, body {
 
 .formatter-controls,
 .decode-controls,
-.encode-controls {
+.encode-controls,
+.convert-controls {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -166,6 +167,7 @@ html, body {
 .formatter-controls[hidden],
 .decode-controls[hidden],
 .encode-controls[hidden],
+.convert-controls[hidden],
 #decodeBadge[hidden] {
   display: none !important;
 }

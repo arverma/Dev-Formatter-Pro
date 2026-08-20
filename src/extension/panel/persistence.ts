@@ -7,6 +7,8 @@ export const WORKSPACE_KEY = 'devFormatterWorkspace';
 const DIFF_B_KEY = 'devFormatterDiffB';
 export const SHELL_KEY = 'devFormatterShell';
 export const DECODE_KIND_KEY = 'devFormatterDecodeKind';
+export const CONVERT_DIR_KEY = 'devFormatterConvertDirection';
+export const CONVERT_TZ_KEY = 'devFormatterConvertTimeZone';
 
 /** Skip draft writes over this size so we keep last-good snapshot and stay under quota. */
 const DRAFT_VALUE_MAX_CHARS = 1_500_000;

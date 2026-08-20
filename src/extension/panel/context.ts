@@ -1,9 +1,10 @@
 import type { DetectedLanguage } from '../../core/detectLanguage';
 import type { ErrorPosition } from '../../core/errorPosition';
 import type { DecodeKind } from '../../features/decode/types';
+import type { ConvertDirection } from '../../features/convert/types';
 import type { SavedInputState } from './persistence';
 
-export type Shell = 'formatter' | 'decode' | 'encode' | 'diff';
+export type Shell = 'formatter' | 'decode' | 'encode' | 'convert' | 'diff';
 export type Workspace = 'format' | 'diff';
 export type ManualMode = 'auto' | 'json' | 'sql';
 export type DecodeKindState = 'auto' | DecodeKind;
@@ -27,14 +28,22 @@ export interface PanelContext {
   formatterControls: HTMLElement;
   decodeControls: HTMLElement;
   encodeControls: HTMLElement;
+  convertControls: HTMLElement;
   shellPickerLabel: HTMLElement;
   shellPickerMenu: HTMLElement;
   decodeKindButtons: NodeListOf<HTMLButtonElement>;
+  convertDirectionButtons: NodeListOf<HTMLButtonElement>;
+  tzPickerLabel: HTMLElement;
+  tzPickerMenu: HTMLElement;
+  tzPickerBtn: HTMLButtonElement;
 
   // State
   shell: Shell;
   workspace: Workspace;
   decodeKind: DecodeKindState;
+  convertDirection: ConvertDirection;
+  /** Resolved IANA id, or the sentinel "local". */
+  convertTimeZone: string;
   currentMode: ManualMode;
   currentDialect: string;
   jsonMinify: boolean;
@@ -44,6 +53,7 @@ export interface PanelContext {
   // Timers
   workspaceRunTimer: number | null;
   decodeRunTimer: number | null;
+  convertRunTimer: number | null;
 
   // Diff marks bag (owned by diffMarks module, referenced here for shell clear)
   clearDiffMarks: () => void;
@@ -69,6 +79,8 @@ export interface PanelContext {
   runFormatting: () => void;
   runDecode: () => void;
   scheduleDecode: () => void;
+  runConvert: () => void;
+  scheduleConvert: () => void;
   runDiff: (options?: { prettyPrint?: boolean }) => void;
   scheduleWorkspace: (options?: { prettyPrintDiff?: boolean }) => void;
   runWorkspace: (options?: { prettyPrintDiff?: boolean }) => void;
@@ -77,6 +89,9 @@ export interface PanelContext {
   applyShellChrome: () => void;
   setShell: (next: Shell) => void;
   updateWatermarkCopy: () => void;
+  /** Resolve "local" → actual IANA id for conversion. */
+  resolveConvertTimeZone: () => string;
+  syncTzPicker: () => void;
 
   // Persistence helpers used by shell / pending
   persistDiffBNow: () => void;

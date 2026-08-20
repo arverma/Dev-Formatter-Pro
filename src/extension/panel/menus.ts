@@ -21,16 +21,24 @@ interface MenuChrome {
   shellPickerBtn: HTMLButtonElement;
   dialectPickerMenu: HTMLElement;
   dialectPickerBtn: HTMLButtonElement;
+  tzPickerMenu: HTMLElement;
+  tzPickerBtn: HTMLButtonElement;
+}
+
+function closeAllMenus(chrome: MenuChrome) {
+  chrome.themePickerMenu.hidden = true;
+  chrome.themePickerBtn.setAttribute('aria-expanded', 'false');
+  chrome.shellPickerMenu.hidden = true;
+  chrome.shellPickerBtn.setAttribute('aria-expanded', 'false');
+  chrome.dialectPickerMenu.hidden = true;
+  chrome.dialectPickerBtn.setAttribute('aria-expanded', 'false');
+  chrome.tzPickerMenu.hidden = true;
+  chrome.tzPickerBtn.setAttribute('aria-expanded', 'false');
 }
 
 export function createMenuControllers(chrome: MenuChrome) {
   function setThemeMenuOpen(open: boolean) {
-    if (open) {
-      chrome.shellPickerMenu.hidden = true;
-      chrome.shellPickerBtn.setAttribute('aria-expanded', 'false');
-      chrome.dialectPickerMenu.hidden = true;
-      chrome.dialectPickerBtn.setAttribute('aria-expanded', 'false');
-    }
+    if (open) closeAllMenus(chrome);
     chrome.themePickerMenu.hidden = !open;
     chrome.themePickerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) {
@@ -39,12 +47,7 @@ export function createMenuControllers(chrome: MenuChrome) {
   }
 
   function setShellMenuOpen(open: boolean) {
-    if (open) {
-      chrome.themePickerMenu.hidden = true;
-      chrome.themePickerBtn.setAttribute('aria-expanded', 'false');
-      chrome.dialectPickerMenu.hidden = true;
-      chrome.dialectPickerBtn.setAttribute('aria-expanded', 'false');
-    }
+    if (open) closeAllMenus(chrome);
     chrome.shellPickerMenu.hidden = !open;
     chrome.shellPickerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) {
@@ -53,12 +56,7 @@ export function createMenuControllers(chrome: MenuChrome) {
   }
 
   function setDialectMenuOpen(open: boolean) {
-    if (open) {
-      chrome.themePickerMenu.hidden = true;
-      chrome.themePickerBtn.setAttribute('aria-expanded', 'false');
-      chrome.shellPickerMenu.hidden = true;
-      chrome.shellPickerBtn.setAttribute('aria-expanded', 'false');
-    }
+    if (open) closeAllMenus(chrome);
     chrome.dialectPickerMenu.hidden = !open;
     chrome.dialectPickerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) {
@@ -66,5 +64,14 @@ export function createMenuControllers(chrome: MenuChrome) {
     }
   }
 
-  return { setThemeMenuOpen, setShellMenuOpen, setDialectMenuOpen };
+  function setTzMenuOpen(open: boolean) {
+    if (open) closeAllMenus(chrome);
+    chrome.tzPickerMenu.hidden = !open;
+    chrome.tzPickerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      positionAnchoredMenu(chrome.tzPickerMenu, chrome.tzPickerBtn, 'left');
+    }
+  }
+
+  return { setThemeMenuOpen, setShellMenuOpen, setDialectMenuOpen, setTzMenuOpen };
 }

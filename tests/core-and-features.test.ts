@@ -121,6 +121,25 @@ test('formatJson formats JSON and handles auto-fix / errors gracefully', () => {
   assert.equal(multiObj.isError, false);
   assert.ok(multiObj.formatted.startsWith('[\n'));
 
+  // Comma-separated objects auto-fix
+  const commaObjs = formatJson('{"id":1},{"id":2}');
+  assert.equal(commaObjs.isError, false);
+  assert.ok(commaObjs.formatted.startsWith('[\n'));
+  assert.match(commaObjs.formatted, /"id": 1/);
+  assert.match(commaObjs.formatted, /"id": 2/);
+
+  // Valid JSON with },{ inside a string must NOT be wrapped
+  const stringWithCommaBrace = formatJson('{"msg":"hello },{ world"}');
+  assert.equal(stringWithCommaBrace.isError, false);
+  assert.ok(!stringWithCommaBrace.formatted.trimStart().startsWith('['));
+  assert.match(stringWithCommaBrace.formatted, /"msg": "hello \},\{ world"/);
+
+  // Valid JSON with }{ inside a string must NOT be wrapped
+  const stringWithBraceBrace = formatJson('{"msg":"}{"}');
+  assert.equal(stringWithBraceBrace.isError, false);
+  assert.ok(!stringWithBraceBrace.formatted.trimStart().startsWith('['));
+  assert.match(stringWithBraceBrace.formatted, /"msg": "\}\{"/);
+
   // Invalid JSON
   const invalid = formatJson('{key: value}');
   assert.equal(invalid.isError, true);

@@ -12,6 +12,7 @@
   <!-- CodeMirror Base Styles -->
   <link rel="stylesheet" href="codemirror/codemirror.min.css">
   <link rel="stylesheet" href="codemirror/addon/fold/foldgutter.min.css">
+  <link rel="stylesheet" href="codemirror/addon/dialog/dialog.css">
   <!-- Dynamic Theme Link for CodeMirror themes -->
   <link id="cmDynamicTheme" rel="stylesheet" href="">
   <!-- App Styles -->
@@ -102,11 +103,11 @@
         <div class="meta-pills">
           <span class="glass-badge" id="jsonBadge">JSON</span>
           <span class="glass-badge" id="decodeBadge" hidden>Base64</span>
-          <div class="select-wrapper" id="dialectWrapper">
-            <select id="dialectSelect" class="glass-select" aria-label="SQL Dialect"></select>
-            <svg class="select-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+          <div class="dialect-picker" id="dialectWrapper">
+            <button type="button" id="dialectPickerBtn" class="glass-pill action-pill dialect-picker-btn" aria-label="SQL Dialect" aria-haspopup="listbox" aria-expanded="false" title="SQL Dialect">
+              <span id="dialectPickerLabel">Trino / Presto</span>
+            </button>
+            <div class="dialect-picker-menu" id="dialectPickerMenu" hidden role="listbox" aria-label="SQL Dialect"></div>
           </div>
           <span class="detected-hint" id="detectedHint"></span>
           <button type="button" id="errorPill" class="glass-pill error-pill" hidden title="Jump to parse error"></button>
@@ -155,6 +156,9 @@
   <script src="codemirror/addon/fold/foldgutter.min.js"></script>
   <script src="codemirror/addon/fold/brace-fold.min.js"></script>
   <script src="codemirror/addon/fold/indent-fold.js"></script>
+  <script src="codemirror/addon/dialog/dialog.js"></script>
+  <script src="codemirror/addon/search/searchcursor.js"></script>
+  <script src="codemirror/addon/search/search.js"></script>
   <script src="script.js"></script>
 </body>
 

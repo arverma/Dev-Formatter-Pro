@@ -1,4 +1,4 @@
-export interface ErrorBannerOptions {
+interface ErrorBannerOptions {
   commentPrefix: '//' | '--';
   title: string;
   hint: string;

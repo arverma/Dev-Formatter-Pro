@@ -362,6 +362,67 @@ html, body {
   background: var(--accent-subtle);
 }
 
+.dialect-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dialect-picker-btn {
+  gap: 4px;
+  font-weight: 600;
+}
+
+.dialect-picker-btn[aria-expanded="true"] {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.dialect-picker-menu {
+  position: fixed;
+  z-index: 1000;
+  width: max-content;
+  min-width: 0;
+  max-height: min(320px, calc(100vh - 48px));
+  overflow-y: auto;
+  padding: 3px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  box-shadow: var(--shadow-glass);
+  scrollbar-width: thin;
+}
+
+.dialect-picker-option {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 500;
+  text-align: left;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dialect-picker-option:hover {
+  background: var(--bg-glass-active);
+  color: var(--text-primary);
+}
+
+.dialect-picker-option[aria-selected="true"] {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--accent-subtle);
+}
+
 /* ─── Segmented Mode Control ──────────────────────────────────────────────── */
 .segmented-control {
   display: inline-flex;
@@ -842,4 +903,215 @@ body.dark-mode ::-webkit-scrollbar-thumb {
 
 body.dark-mode ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── CodeMirror Find / Replace Dialog ────────────────────────────────────── */
+.CodeMirror-dialog {
+  z-index: 25;
+  left: auto !important;
+  right: 10px !important;
+  width: max-content;
+  max-width: calc(100% - 20px);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  /* Solid surface — never glass/fade; CodeMirror may set inline opacity when a
+     match sits under the bar, so force full opacity. */
+  background: var(--bg-pane) !important;
+  opacity: 1 !important;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 1.4;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-container);
+  box-shadow: var(--shadow-glass);
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.CodeMirror-dialog-top {
+  top: 44px; /* clear floating pane bars */
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.CodeMirror-dialog-bottom {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.CodeMirror-dialog .CodeMirror-search-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-right: 0;
+}
+
+.CodeMirror-dialog .cm-find-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-tertiary);
+}
+
+.CodeMirror-dialog .cm-find-label .cm-search-icon {
+  flex: 0 0 14px;
+}
+
+.CodeMirror-dialog .cm-find-label .CodeMirror-search-field {
+  margin: 0;
+}
+
+.CodeMirror-dialog input.CodeMirror-search-field,
+.CodeMirror-dialog input {
+  background: var(--bg-app);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 8px;
+  width: 12em;
+  max-width: 40vw;
+  outline: none;
+}
+
+.CodeMirror-dialog input.CodeMirror-search-field:focus,
+.CodeMirror-dialog input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.CodeMirror-dialog .CodeMirror-search-hint,
+.CodeMirror-dialog .CodeMirror-search-count {
+  color: var(--text-tertiary) !important;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.CodeMirror-dialog.cm-replace-dialog,
+.CodeMirror-dialog:has(.cm-replace-panel) {
+  flex-direction: column;
+  align-items: stretch;
+  white-space: normal;
+  gap: 6px;
+  padding: 8px 10px;
+  width: min(260px, calc(100% - 20px));
+  max-width: calc(100% - 20px);
+}
+
+.cm-replace-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.cm-replace-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cm-replace-leading-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+}
+
+.cm-replace-row .CodeMirror-search-field {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+}
+
+.cm-replace-row .CodeMirror-search-field::placeholder {
+  color: var(--text-tertiary);
+}
+
+.cm-replace-row .CodeMirror-search-count {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-left: 0;
+  text-align: right;
+  font-size: 10px;
+}
+
+.cm-replace-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.cm-search-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.cm-search-icon-btn:hover {
+  background: var(--bg-glass-active) !important;
+  color: var(--text-primary);
+}
+
+.cm-search-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+  color: var(--accent);
+}
+
+.cm-search-icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.CodeMirror-dialog button {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  margin: 0;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-app);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.CodeMirror-dialog button:hover {
+  background: var(--bg-glass-active);
+  color: var(--text-primary);
+}
+
+.CodeMirror-dialog button:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.cm-searching {
+  background: var(--accent-selection);
 }

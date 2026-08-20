@@ -31,7 +31,7 @@ export function lineColToOffset(text: string, line1: number, col1: number): numb
   return Math.min(offset, text.length);
 }
 
-export function leadingWhitespaceLength(raw: string): number {
+function leadingWhitespaceLength(raw: string): number {
   return raw.length - raw.trimStart().length;
 }
 

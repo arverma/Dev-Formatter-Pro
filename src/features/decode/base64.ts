@@ -4,7 +4,7 @@ import type { DecodeResult } from './types';
 const BASE64_ALPHABET = /^[A-Za-z0-9+/_-]+={0,2}$/;
 
 /** Normalize standard or URL-safe Base64 and pad to a multiple of 4. */
-export function normalizeBase64(raw: string): string | undefined {
+function normalizeBase64(raw: string): string | undefined {
   const compact = raw.trim().replace(/\s+/g, '');
   if (!compact || !BASE64_ALPHABET.test(compact)) return undefined;
   let s = compact.replace(/-/g, '+').replace(/_/g, '/');
@@ -47,12 +47,15 @@ export function decodeBase64(raw: string): DecodeResult {
   return { text: decoded.text, isError: false, kind: 'base64' };
 }
 
+const FROM_CHAR_CHUNK = 0x8000;
+
 export function encodeBase64(raw: string): DecodeResult {
   try {
     const bytes = new TextEncoder().encode(raw);
     let binary = '';
-    for (const byte of bytes) {
-      binary += String.fromCharCode(byte);
+    for (let i = 0; i < bytes.length; i += FROM_CHAR_CHUNK) {
+      const chunk = bytes.subarray(i, i + FROM_CHAR_CHUNK);
+      binary += String.fromCharCode(...chunk);
     }
     return { text: btoa(binary), isError: false, kind: 'base64' };
   } catch {

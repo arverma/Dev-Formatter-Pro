@@ -56,6 +56,8 @@ function copyAssets() {
 
   // Vendored CodeMirror core, JS mode, and fold addons
   mkdirSync(`${DIST}/codemirror/addon/fold`, { recursive: true });
+  mkdirSync(`${DIST}/codemirror/addon/dialog`, { recursive: true });
+  mkdirSync(`${DIST}/codemirror/addon/search`, { recursive: true });
   copyFileSync('codemirror/codemirror.min.js', `${DIST}/codemirror/codemirror.min.js`);
   copyFileSync('codemirror/codemirror.min.css', `${DIST}/codemirror/codemirror.min.css`);
   copyFileSync('codemirror/javascript.min.js', `${DIST}/codemirror/javascript.min.js`);
@@ -74,6 +76,16 @@ function copyAssets() {
     'node_modules/codemirror/addon/fold/indent-fold.js',
     `${DIST}/codemirror/addon/fold/indent-fold.js`
   );
+
+  // Search / find-replace dialogs (dialog → searchcursor → search)
+  for (const [src, dest] of [
+    ['node_modules/codemirror/addon/dialog/dialog.js', `${DIST}/codemirror/addon/dialog/dialog.js`],
+    ['node_modules/codemirror/addon/dialog/dialog.css', `${DIST}/codemirror/addon/dialog/dialog.css`],
+    ['node_modules/codemirror/addon/search/searchcursor.js', `${DIST}/codemirror/addon/search/searchcursor.js`],
+    ['node_modules/codemirror/addon/search/search.js', `${DIST}/codemirror/addon/search/search.js`],
+  ]) {
+    copyFileSync(src, dest);
+  }
 
   // Copy only the curated CodeMirror themes used by the editor picker
   const cmThemesSrc = 'node_modules/codemirror/theme';

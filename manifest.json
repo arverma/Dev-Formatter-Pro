@@ -4,13 +4,12 @@
   "version": "1.1.0",
   "description": "A minimalist dev formatter for JSON and SQL. Format, validate, and copy with ease.",
   "permissions": [
-    "tabs",
+    "activeTab",
     "storage",
     "scripting",
     "sidePanel",
     "contextMenus"
   ],
-  "host_permissions": ["<all_urls>"],
   "side_panel": {
     "default_path": "sidepanel.html"
   },

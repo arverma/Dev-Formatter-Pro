@@ -25,6 +25,16 @@ test('Base64 encode is UTF-8 and round-trips with decode', () => {
   assert.equal(decoded.text, 'hello ✓');
 });
 
+test('Base64 encode handles payloads larger than one fromCharCode chunk', () => {
+  // 0x8000 bytes per chunk in encodeBase64 — use more than one chunk
+  const raw = 'あ'.repeat(20_000);
+  const encoded = encodeBase64(raw);
+  assert.equal(encoded.isError, false);
+  const decoded = decodeBase64(encoded.text);
+  assert.equal(decoded.isError, false);
+  assert.equal(decoded.text, raw);
+});
+
 test('URL decode expands percent-encoded URLs', () => {
   const raw =
     'https%3A%2F%2Fapi.internal.com%2Fv1%2Fusers%3Fname%3DAman%20Verma%26role%3DData%2BEngineer';

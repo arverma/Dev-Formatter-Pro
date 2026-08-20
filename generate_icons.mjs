@@ -1,5 +1,5 @@
 // generate_icons.mjs
-// Renders the Dev Formatter Pro `</>` mark to PNG at 16/48/128 with a
+// Renders the Dev ToolBox Pro `</>` mark to PNG at 16/48/128 with a
 // pure-JS PNG encoder (no image deps). Geometry is signed-distance based so
 // every size gets analytic anti-aliasing instead of downscaling artifacts.
 

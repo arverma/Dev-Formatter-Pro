@@ -1,4 +1,4 @@
-# Dev Formatter Pro
+# Dev ToolBox Pro
 
 A Chrome MV3 side panel for formatting, validating, and editing **JSON** and **SQL** (default **Trino**, plus 19 dialects via `sql-formatter`).
 
@@ -7,7 +7,7 @@ A Chrome MV3 side panel for formatting, validating, and editing **JSON** and **S
 - **SQL dialects**: Trino / Presto (default), BigQuery, PostgreSQL, Snowflake, MySQL, Spark, ClickHouse, TiDB, and more.
 - **JSON tools**: pretty-print or minify, plus escape / unescape as a JSON string.
 - **Copy**, **editor themes** (dark, light, and a few CodeMirror themes), and a **resizable** split view. Settings persist locally.
-- **Context menu**: “Format with Dev Formatter Pro” on selected text.
+- **Context menu**: “Format with Dev ToolBox Pro” on selected text.
 - **Offline**: formatting runs in the browser; nothing is sent to a server.
 
 ## Getting Started

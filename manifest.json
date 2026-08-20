@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Dev Formatter Pro",
+  "name": "Dev ToolBox Pro",
   "version": "1.1.0",
   "description": "A minimalist dev formatter for JSON and SQL. Format, validate, and copy with ease.",
   "permissions": [
@@ -15,7 +15,7 @@
     "default_path": "sidepanel.html"
   },
   "action": {
-    "default_title": "Open Dev Formatter Pro"
+    "default_title": "Open Dev ToolBox Pro"
   },
   "background": {
     "service_worker": "background.js"

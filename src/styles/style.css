@@ -1,6 +1,6 @@
 /* 
   src/styles/style.css
-  Dev Formatter Pro — Apple Minimalist Design System
+  Dev ToolBox Pro — Apple Minimalist Design System
   Inspired by macOS Human Interface Guidelines & Cupertino craftsmanship.
 */
 
@@ -318,10 +318,7 @@ html, body {
 }
 
 .shell-picker-chevron {
-  position: static;
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
+  display: none;
 }
 
 .shell-picker-menu {

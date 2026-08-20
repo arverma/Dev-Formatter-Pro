@@ -2,7 +2,7 @@
 
 ## How to Contribute
 
-- **Bugs / features:** Open an [issue](https://github.com/arverma/Json-Formatter/issues) with steps to reproduce (and a screenshot if useful).
+- **Bugs / features:** Open an [issue](https://github.com/arverma/Dev-ToolBox-Pro/issues) with steps to reproduce (and a screenshot if useful).
 - **Pull requests:** Fork, branch (`git checkout -b feature/my-feature`), commit, push, and open a PR.
 
 ## Local setup

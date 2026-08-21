@@ -47,6 +47,19 @@ Useful scripts:
 2. **Load unpacked** and select the **`dist/`** directory (not the repo root).
 3. After code changes, run `npm run build` (or `watch`) and click **Reload** on the extension card.
 
+### Preview the panel in a browser (Cursor)
+
+For CSS / layout / editor UI work without reloading the unpacked extension, serve `dist/` and open the panel HTML:
+
+```bash
+npm run watch
+python3 -m http.server 8765 --directory dist
+```
+
+Then open [http://localhost:8765/sidepanel.html](http://localhost:8765/sidepanel.html) (Cursor Simple Browser or any browser). Keep `watch` running so rebuilds show up on refresh.
+
+This is a **UI preview only**: Chrome APIs (side panel toggle, context menu, `chrome.storage` handoff) are not available. Use **Load in Chrome** to verify those.
+
 ## Architecture
 
 ```

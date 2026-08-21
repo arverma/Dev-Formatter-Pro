@@ -39,7 +39,7 @@ import {
   captureEditorState,
   notifyPanelClosed,
 } from './persistence';
-import { createMenuControllers } from './menus';
+import { createMenuControllers, closeAllCombos, closeCombosOutside } from './menus';
 import { updateModeButtons, flashToolError, flashCopySuccess } from './toolbar';
 import { setupSplitterResize } from './layout';
 import { createPendingInputController } from './chromePending';
@@ -81,7 +81,6 @@ function createPanelApp() {
   const unescapeBtn = document.getElementById('unescapeBtn') as HTMLButtonElement;
   const errorPill = document.getElementById('errorPill') as HTMLButtonElement;
   const modeButtons = document.querySelectorAll<HTMLButtonElement>('.segment-btn[data-mode]');
-  const shellPicker = document.getElementById('shellPicker') as HTMLElement;
   const shellPickerBtn = document.getElementById('shellPickerBtn') as HTMLButtonElement;
   const shellPickerMenu = document.getElementById('shellPickerMenu') as HTMLElement;
   const shellPickerLabel = document.getElementById('shellPickerLabel') as HTMLElement;
@@ -93,11 +92,9 @@ function createPanelApp() {
   const convertDirectionButtons = document.querySelectorAll<HTMLButtonElement>(
     '.segment-btn[data-convert]'
   );
-  const tzPicker = document.getElementById('tzPicker') as HTMLElement;
   const tzPickerBtn = document.getElementById('tzPickerBtn') as HTMLButtonElement;
   const tzPickerMenu = document.getElementById('tzPickerMenu') as HTMLElement;
   const tzPickerLabel = document.getElementById('tzPickerLabel') as HTMLElement;
-  const themePicker = document.getElementById('themePicker') as HTMLElement;
   const themePickerBtn = document.getElementById('themePickerBtn') as HTMLButtonElement;
   const themePickerMenu = document.getElementById('themePickerMenu') as HTMLElement;
   const cmDynamicThemeLink = document.getElementById('cmDynamicTheme') as HTMLLinkElement;
@@ -165,11 +162,12 @@ function createPanelApp() {
   let jsonMinify = localStorage.getItem(MINIFY_KEY) === '1';
 
   // ─── Populate Dialect Menu ───────────────────────────────────────────────
-  SQL_DIALECTS.forEach((d) => {
+  SQL_DIALECTS.forEach((d, i) => {
     const opt = document.createElement('button');
     opt.type = 'button';
-    opt.className = 'dialect-picker-option';
+    opt.className = 'combo-option';
     opt.role = 'option';
+    opt.id = `dialect-opt-${i}`;
     opt.dataset.value = d.value;
     opt.textContent = d.label;
     dialectPickerMenu.appendChild(opt);
@@ -181,7 +179,7 @@ function createPanelApp() {
     dialectPickerLabel.textContent = matched.label;
     dialectPickerBtn.title = matched.label;
     dialectPickerMenu
-      .querySelectorAll<HTMLButtonElement>('.dialect-picker-option')
+      .querySelectorAll<HTMLButtonElement>('.combo-option')
       .forEach((btn) => {
         btn.setAttribute(
           'aria-selected',
@@ -222,11 +220,12 @@ function createPanelApp() {
     convertTimeZone = 'local';
   }
 
-  tzOptions.forEach((z) => {
+  tzOptions.forEach((z, i) => {
     const opt = document.createElement('button');
     opt.type = 'button';
-    opt.className = 'dialect-picker-option';
+    opt.className = 'combo-option';
     opt.role = 'option';
+    opt.id = `tz-opt-${i}`;
     opt.dataset.value = z.value;
     opt.textContent = z.label;
     tzPickerMenu.appendChild(opt);
@@ -243,7 +242,7 @@ function createPanelApp() {
       convertTimeZone === 'local' ? 'Local' : matched.label;
     tzPickerBtn.title = matched.label;
     tzPickerMenu
-      .querySelectorAll<HTMLButtonElement>('.dialect-picker-option')
+      .querySelectorAll<HTMLButtonElement>('.combo-option')
       .forEach((btn) => {
         btn.setAttribute(
           'aria-selected',
@@ -254,11 +253,12 @@ function createPanelApp() {
   syncTzPicker();
 
   // ─── Populate Theme Menu ─────────────────────────────────────────────────
-  EDITOR_THEMES.forEach((t) => {
+  EDITOR_THEMES.forEach((t, i) => {
     const opt = document.createElement('button');
     opt.type = 'button';
-    opt.className = 'theme-picker-option';
+    opt.className = 'combo-option';
     opt.role = 'option';
+    opt.id = `theme-opt-${i}`;
     opt.dataset.value = t.value;
     opt.textContent = t.label;
     themePickerMenu.appendChild(opt);
@@ -394,7 +394,7 @@ function createPanelApp() {
 
   themePickerMenu.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
-      '.theme-picker-option'
+      '.combo-option'
     );
     if (!btn?.dataset.value) return;
     currentEditorTheme = btn.dataset.value;
@@ -403,55 +403,12 @@ function createPanelApp() {
   });
 
   document.addEventListener('click', (e) => {
-    const t = e.target as Node;
-    if (
-      !themePickerMenu.hidden &&
-      !themePicker.contains(t) &&
-      !themePickerMenu.contains(t)
-    ) {
-      menus.setThemeMenuOpen(false);
-    }
-    if (
-      !shellPickerMenu.hidden &&
-      !shellPicker.contains(t) &&
-      !shellPickerMenu.contains(t)
-    ) {
-      menus.setShellMenuOpen(false);
-    }
-    if (
-      !dialectPickerMenu.hidden &&
-      !dialectWrapper.contains(t) &&
-      !dialectPickerMenu.contains(t)
-    ) {
-      menus.setDialectMenuOpen(false);
-    }
-    if (
-      !tzPickerMenu.hidden &&
-      !tzPicker.contains(t) &&
-      !tzPickerMenu.contains(t)
-    ) {
-      menus.setTzMenuOpen(false);
-    }
+    closeCombosOutside(e.target as Node);
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (!themePickerMenu.hidden) {
-      menus.setThemeMenuOpen(false);
-      themePickerBtn.focus();
-    }
-    if (!shellPickerMenu.hidden) {
-      menus.setShellMenuOpen(false);
-      shellPickerBtn.focus();
-    }
-    if (!dialectPickerMenu.hidden) {
-      menus.setDialectMenuOpen(false);
-      dialectPickerBtn.focus();
-    }
-    if (!tzPickerMenu.hidden) {
-      menus.setTzMenuOpen(false);
-      tzPickerBtn.focus();
-    }
+    closeAllCombos({ restoreFocus: true });
     search.closeAllSearchUi();
   });
 
@@ -665,12 +622,9 @@ function createPanelApp() {
 
   // ─── Context-menu pending input ──────────────────────────────────────────
   const pending = createPendingInputController({
-    getShell: () => ctx.shell,
-    getFocusedPane: () => ctx.focusedPane,
+    setShell: (next) => ctx.setShell(next),
     inputEditor,
-    outputEditor,
     persistInputStateNow,
-    persistDiffBNow,
     runWorkspaceNow: () => ctx.runWorkspaceNow(),
   });
   pending.registerPendingInputListeners();
@@ -693,7 +647,7 @@ function createPanelApp() {
 
   shellPickerMenu.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
-      '.shell-picker-option'
+      '.combo-option'
     );
     if (!btn?.dataset.shell) return;
     menus.setShellMenuOpen(false);
@@ -731,7 +685,7 @@ function createPanelApp() {
 
   tzPickerMenu.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
-      '.dialect-picker-option'
+      '.combo-option'
     );
     if (!btn?.dataset.value) return;
     ctx.convertTimeZone = btn.dataset.value;
@@ -750,7 +704,7 @@ function createPanelApp() {
 
   dialectPickerMenu.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
-      '.dialect-picker-option'
+      '.combo-option'
     );
     if (!btn?.dataset.value) return;
     ctx.currentDialect = btn.dataset.value;

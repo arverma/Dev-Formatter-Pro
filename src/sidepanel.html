@@ -27,18 +27,18 @@
       <div class="floating-bar top-bar">
         <div class="top-controls-left">
           <div class="shell-picker" id="shellPicker">
-            <button type="button" id="shellPickerBtn" class="glass-pill action-pill shell-picker-btn" aria-label="Mode" aria-haspopup="listbox" aria-expanded="false" title="Mode">
+            <button type="button" id="shellPickerBtn" class="combo-trigger shell-picker-btn" aria-label="Mode" aria-haspopup="listbox" aria-expanded="false" title="Mode">
               <span id="shellPickerLabel">Format</span>
-              <svg class="select-chevron shell-picker-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <svg class="combo-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                 <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
-            <div class="shell-picker-menu" id="shellPickerMenu" hidden role="listbox" aria-label="Mode">
-              <button type="button" class="shell-picker-option" data-shell="formatter" role="option">Format</button>
-              <button type="button" class="shell-picker-option" data-shell="decode" role="option">Decode</button>
-              <button type="button" class="shell-picker-option" data-shell="encode" role="option">Encode</button>
-              <button type="button" class="shell-picker-option" data-shell="convert" role="option">Convert</button>
-              <button type="button" class="shell-picker-option" data-shell="diff" role="option">Diff</button>
+            <div class="combo-menu shell-picker-menu" id="shellPickerMenu" hidden role="listbox" aria-label="Mode">
+              <button type="button" class="combo-option" id="shell-opt-0" data-shell="formatter" role="option">Format</button>
+              <button type="button" class="combo-option" id="shell-opt-1" data-shell="decode" role="option">Decode</button>
+              <button type="button" class="combo-option" id="shell-opt-2" data-shell="encode" role="option">Encode</button>
+              <button type="button" class="combo-option" id="shell-opt-3" data-shell="convert" role="option">Convert</button>
+              <button type="button" class="combo-option" id="shell-opt-4" data-shell="diff" role="option">Diff</button>
             </div>
           </div>
           <div id="formatterControls" class="formatter-controls">
@@ -75,10 +75,13 @@
               <button type="button" class="segment-btn" data-convert="date">Date</button>
             </div>
             <div class="dialect-picker" id="tzPicker">
-              <button type="button" id="tzPickerBtn" class="glass-pill action-pill dialect-picker-btn" aria-label="Timezone" aria-haspopup="listbox" aria-expanded="false" title="Timezone">
+              <button type="button" id="tzPickerBtn" class="combo-trigger dialect-picker-btn" aria-label="Timezone" aria-haspopup="listbox" aria-expanded="false" title="Timezone">
                 <span id="tzPickerLabel">Local</span>
+                <svg class="combo-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
               </button>
-              <div class="dialect-picker-menu" id="tzPickerMenu" hidden role="listbox" aria-label="Timezone"></div>
+              <div class="combo-menu dialect-picker-menu" id="tzPickerMenu" hidden role="listbox" aria-label="Timezone"></div>
             </div>
           </div>
         </div>
@@ -87,13 +90,16 @@
         <div class="top-controls-right">
           <span class="glass-pill cursor-pill" id="cursorPos" title="Cursor Line:Column">1:1</span>
           <div class="theme-picker" id="themePicker">
-            <button type="button" id="themePickerBtn" class="glass-pill icon-pill theme-picker-btn" aria-label="Editor theme" aria-haspopup="listbox" aria-expanded="false" title="Editor theme">
+            <button type="button" id="themePickerBtn" class="combo-trigger icon-only theme-picker-btn" aria-label="Editor theme" aria-haspopup="listbox" aria-expanded="false" title="Editor theme">
               <svg class="icon theme-palette-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path
                   d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-4 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1 4.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm6.5-1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
               </svg>
+              <svg class="combo-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
-            <div class="theme-picker-menu" id="themePickerMenu" hidden role="listbox" aria-label="Editor theme"></div>
+            <div class="combo-menu theme-picker-menu" id="themePickerMenu" hidden role="listbox" aria-label="Editor theme"></div>
           </div>
         </div>
       </div>
@@ -118,10 +124,13 @@
           <span class="glass-badge" id="jsonBadge">JSON</span>
           <span class="glass-badge" id="decodeBadge" hidden>Base64</span>
           <div class="dialect-picker" id="dialectWrapper">
-            <button type="button" id="dialectPickerBtn" class="glass-pill action-pill dialect-picker-btn" aria-label="SQL Dialect" aria-haspopup="listbox" aria-expanded="false" title="SQL Dialect">
+            <button type="button" id="dialectPickerBtn" class="combo-trigger dialect-picker-btn" aria-label="SQL Dialect" aria-haspopup="listbox" aria-expanded="false" title="SQL Dialect">
               <span id="dialectPickerLabel">Trino / Presto</span>
+              <svg class="combo-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
-            <div class="dialect-picker-menu" id="dialectPickerMenu" hidden role="listbox" aria-label="SQL Dialect"></div>
+            <div class="combo-menu dialect-picker-menu" id="dialectPickerMenu" hidden role="listbox" aria-label="SQL Dialect"></div>
           </div>
           <span class="detected-hint" id="detectedHint"></span>
           <button type="button" id="errorPill" class="glass-pill error-pill" hidden title="Jump to parse error"></button>

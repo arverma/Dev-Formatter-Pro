@@ -4,7 +4,7 @@ import {
   type PendingInput,
 } from '../../core/pendingInput';
 import { INPUT_WORK_MAX_CHARS } from './persistence';
-import type { FocusedPane, Shell } from './context';
+import type { Shell } from './context';
 
 function isPendingInput(value: unknown): value is PendingInput {
   return (
@@ -16,12 +16,9 @@ function isPendingInput(value: unknown): value is PendingInput {
 }
 
 interface PendingInputDeps {
-  getShell: () => Shell;
-  getFocusedPane: () => FocusedPane;
+  setShell: (next: Shell) => void;
   inputEditor: { setValue: (v: string) => void };
-  outputEditor: { setValue: (v: string) => void };
   persistInputStateNow: () => void;
-  persistDiffBNow: () => void;
   runWorkspaceNow: () => void;
 }
 
@@ -42,16 +39,10 @@ export function createPendingInputController(deps: PendingInputDeps) {
       return;
     }
     lastAppliedPendingTs = payload.ts;
-    const target =
-      deps.getShell() === 'diff' && deps.getFocusedPane() === 'output'
-        ? deps.outputEditor
-        : deps.inputEditor;
-    target.setValue(payload.value);
-    if (target === deps.inputEditor) {
-      deps.persistInputStateNow();
-    } else {
-      deps.persistDiffBNow();
-    }
+    // Context menu is "Format with Dev ToolBox Pro" — always enter Format mode.
+    deps.setShell('formatter');
+    deps.inputEditor.setValue(payload.value);
+    deps.persistInputStateNow();
     deps.runWorkspaceNow();
     await chrome.storage.local.remove(PENDING_INPUT_KEY);
   }

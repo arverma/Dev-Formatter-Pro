@@ -43,7 +43,7 @@ export function bindShellWorkspace(ctx: PanelContext) {
     ctx.convertControls.hidden = ctx.shell !== 'convert';
     ctx.shellPickerLabel.textContent = SHELL_LABELS[ctx.shell];
     ctx.shellPickerMenu
-      .querySelectorAll<HTMLButtonElement>('.shell-picker-option')
+      .querySelectorAll<HTMLButtonElement>('.combo-option')
       .forEach((btn) => {
         btn.setAttribute(
           'aria-selected',

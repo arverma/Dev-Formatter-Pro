@@ -18,6 +18,15 @@ npm run build
 
 Load **`dist/`** as an unpacked extension in Chrome to try UI changes. After edits, rebuild (or use `npm run watch`) and **Reload** the extension.
 
+For panel CSS/layout iteration in Cursor, serve `dist/` and open the HTML (Chrome APIs will not work):
+
+```bash
+npm run watch
+python3 -m http.server 8765 --directory dist
+```
+
+Open [http://localhost:8765/sidepanel.html](http://localhost:8765/sidepanel.html) and refresh after rebuilds.
+
 ## Architecture (keep layers clean)
 
 | Layer | Path | May import |

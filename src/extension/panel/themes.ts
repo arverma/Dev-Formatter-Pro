@@ -51,7 +51,7 @@ export function applyTheme(deps: ApplyThemeDeps): EditorThemeOption {
   localStorage.setItem(deps.themeKey, matched.value);
   deps.themePickerBtn.title = matched.label;
   deps.themePickerMenu
-    .querySelectorAll<HTMLButtonElement>('.theme-picker-option')
+    .querySelectorAll<HTMLButtonElement>('.combo-option')
     .forEach((btn) => {
       btn.setAttribute(
         'aria-selected',

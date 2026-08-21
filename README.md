@@ -77,7 +77,7 @@ Formatting and decode logic under `core/` and `features/` is unit-tested and reu
 - Editor drafts and prefs use `localStorage` (size-capped); context-menu handoff uses `chrome.storage.local`.
 - Nothing is sent to a remote server by this extension.
 
-Full policy: [PRIVACY.md](PRIVACY.md) (HTML: [docs/privacy.html](docs/privacy.html)). Chrome Web Store listing copy and permission justifications: [store/LISTING.md](store/LISTING.md).
+Full policy: [PRIVACY.md](PRIVACY.md). Chrome Web Store listing copy and permission justifications: [store/LISTING.md](store/LISTING.md).
 
 ## Contributing
 

@@ -6,8 +6,6 @@ After `PRIVACY.md` is on the default branch, the privacy URL is:
 
 `https://github.com/arverma/Dev-ToolBox-Pro/blob/main/PRIVACY.md`
 
-Prefer a GitHub Pages (or other HTTPS) URL of `docs/privacy.html` if review rejects a blob page.
-
 ## Product
 
 | Field | Value |
@@ -74,10 +72,12 @@ No account or login. The extension does not call a backend.
 | File | Dashboard field |
 | :--- | :--- |
 | `../icons/icon128.png` | Store icon 128×128 |
-| `promo-small-440x280.png` | Small promo tile (required) |
-| `screenshot-format-1280x800.png` | Screenshot 1 |
-| `screenshot-decode-1280x800.png` | Screenshot 2 |
-
-These tiles are listing composites (correct pixel sizes). Swap in live captures from `dist/` if you want the dashboard to match the panel 1:1.
+| `small promo.png` | Small promo tile (required) |
+| `Marquee promo tile  1400x560.png` | Marquee promo tile (optional) |
+| `screenshot-1.png` | Screenshot 1 |
+| `screenshot-2.jpg` | Screenshot 2 |
+| `screenshot-3.jpg` | Screenshot 3 |
+| `screenshot-4.jpg` | Screenshot 4 |
+| `screenshot-5.jpg` | Screenshot 5 |
 
 Package upload ZIP: `npm run pack` → `store/dev-toolbox-pro-<version>.zip`.

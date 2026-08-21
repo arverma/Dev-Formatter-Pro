@@ -4,7 +4,6 @@
 // every size gets analytic anti-aliasing instead of downscaling artifacts.
 
 import { writeFileSync, mkdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 
 // ─── PNG encoding ────────────────────────────────────────────────────────────
@@ -31,28 +30,20 @@ function createChunk(type, data) {
   return Buffer.concat([length, typeAndData, crc]);
 }
 
-export function createPNG(width, height, renderPixel) {
-  const rgba = Buffer.alloc(width * height * 4);
-  let i = 0;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const [r, g, b, a] = renderPixel(x + 0.5, y + 0.5);
-      rgba[i++] = r;
-      rgba[i++] = g;
-      rgba[i++] = b;
-      rgba[i++] = a;
-    }
-  }
-  return createPNGFromRgba(width, height, rgba);
-}
-
-export function createPNGFromRgba(width, height, rgba) {
+function createPNG(width, height, renderPixel) {
   const rowSize = 1 + width * 4;
   const raw = Buffer.alloc(height * rowSize);
+
+  let offset = 0;
   for (let y = 0; y < height; y++) {
-    const rowStart = y * rowSize;
-    raw[rowStart] = 0;
-    rgba.copy(raw, rowStart + 1, y * width * 4, (y + 1) * width * 4);
+    raw[offset++] = 0;
+    for (let x = 0; x < width; x++) {
+      const [r, g, b, a] = renderPixel(x + 0.5, y + 0.5);
+      raw[offset++] = r;
+      raw[offset++] = g;
+      raw[offset++] = b;
+      raw[offset++] = a;
+    }
   }
 
   const ihdr = Buffer.alloc(13);
@@ -125,7 +116,7 @@ function glyphDist(nx, ny, L) {
 
 // ─── Pixel shader ────────────────────────────────────────────────────────────
 
-export function renderIconPixel(x, y, size) {
+function renderIconPixel(x, y, size) {
   const half = size / 2;
   const nx = (x - half) / half;
   const ny = (y - half) / half;
@@ -196,10 +187,8 @@ export function renderIconPixel(x, y, size) {
 
 // ─── Emit ────────────────────────────────────────────────────────────────────
 
-if (fileURLToPath(import.meta.url) === process.argv[1]) {
-  mkdirSync('icons', { recursive: true });
-  for (const size of [16, 32, 48, 128]) {
-    writeFileSync(`icons/icon${size}.png`, createPNG(size, size, (x, y) => renderIconPixel(x, y, size)));
-    console.log(`icons/icon${size}.png`);
-  }
+mkdirSync('icons', { recursive: true });
+for (const size of [16, 32, 48, 128]) {
+  writeFileSync(`icons/icon${size}.png`, createPNG(size, size, (x, y) => renderIconPixel(x, y, size)));
+  console.log(`icons/icon${size}.png`);
 }
